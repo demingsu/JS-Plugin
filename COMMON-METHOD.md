@@ -161,3 +161,75 @@ String.prototype.timeFormat = function (format) {
     });
 }
 ```
+### 16进制颜色转rgba
+```
+let hexToRgba = (val: string, opacity = 1) => {
+    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(val)) {
+        /* 自动补全3位16进制字符串 */
+        if (val.length === 4) {
+            let str = "#";
+            for (let i = 1; i < 4; i ++) {
+                let char = val.slice(i, i + 1);
+                str += char.concat(char);
+            }
+            val = str;
+        }
+        let res = [];
+        /* 遍历字符串转为十进制rgb */
+        for (let i = 1; i < 7; i += 2) {
+            /* 两个方法都可以转 */
+            res.push(parseInt(val.slice(i, i + 2), 16));
+        }
+        res.push(opacity);
+        val = `rgba(${res.join(',')})`;
+    }
+    return val;
+};
+```
+### 去掉字段的两端空格
+```
+let trimObject = (obj: any): any => {
+    let res: any = {} as any;
+    for (let name in obj) {
+        if (obj.hasOwnProperty(name)) {
+            res[name] = obj[name].replace(/(^\s*)|(\s*$)/g, '');
+        }
+    }
+
+    return res;
+};
+```
+### 计算文件大小并返回格式化
+```
+let fileSize = (size: number = 0, count: number = 0): any => {
+    if(!count) count = 0;
+    if(isNaN(size)) return 0;
+    var names = ['byte', 'KByte', 'MB', 'GB', 'TB'];
+    if(size < 1024) {
+        return size + names[count];
+    } else {
+        return fileSize(parseFloat((size / 1024).toFixed(2)), ++count);
+    }
+};
+```
+### 计算分页标签
+```
+let pagingCount = (total: number, page: number, size: number): string[] => {
+    let res: any[] = ['1'];
+    let tp = Math.ceil(total/size);
+    if(tp > 7) {
+        if(page < 4) {
+            res = res.concat(['2', '3', '...', `${tp}`]);
+        } else if(page > tp - 3) {
+            res = res.concat(['...', `${tp - 2}`, `${tp - 1}`, `${tp}`]);
+        } else {
+            res = res.concat(['...', `${page - 1}`, `${page}`, `${page + 1}`, '...']);
+        }
+    } else {
+        for(let i = 1;i < tp;i ++) {
+            res.push(`${i + 1}`);
+        }
+    }
+    return res;
+};
+```
